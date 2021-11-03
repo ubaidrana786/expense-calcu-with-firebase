@@ -25,7 +25,7 @@ function Signup() {
             console.log(currentUser)
             currentUser.updateProfile({
                 displayName: displayName,
-                photoURL:image
+             
             })
             history.push("/")
             // window.M.toast({ html: `welcome ${result.user.email}`, classes: "green" })
