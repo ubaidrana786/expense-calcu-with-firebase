@@ -6,21 +6,10 @@ import {auth, db} from "../firebase";
 export const AddExpense = () => {
     const history = useHistory()
     const [user, setuser] = useState(null)
-    useEffect(() => {
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                setuser(user)
-
-            } else setuser(null)
-        })
-
-
-    }, [])
-
     const [enteredTitle, setEnteredTitle] = useState("");
     const [enteredAmount, setEnteredAmount] = useState("");
     const [enteredType, setenteredType] = useState("");
-    const [money, setmoney] = useState(0)
+    const [money, setmoney] = useState(0);
     const [transactions, settransactions] = useState([
         {
             id: 1,
@@ -34,8 +23,18 @@ export const AddExpense = () => {
             Type: "expense",
             price: "10"
         }
-    ])
+    ]);
 
+    useEffect(() => {
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                setuser(user)
+
+            } else setuser(null)
+        })
+
+
+    }, [])
 
     const amountChangeHandler = (event) => {
         setEnteredAmount(event.target.value);
@@ -46,56 +45,44 @@ export const AddExpense = () => {
     };
     const logout = () => {
         auth.signOut()
-
     }
 
-
     const addtodo = () => {
-
 
         transactions.push({
             id: transactions.length,
             name: enteredTitle,
             Type: enteredType,
             price: enteredAmount,
-
         })
         console.log(transactions)
 
-
         db.collection("expense_calculator").doc(user.uid).set({
-
             id: transactions.length,
             name: enteredTitle,
             Type: enteredType,
             price: enteredAmount,
-
             // transactions: [...transactions]
-
         }).then((element) => {
             //success callback
-
         }).catch((error) => {
             //error callback
             alert('error ', error)
         });
-
-
     };
+
     const Fetchdata = () => {
         db.collection("expense_calculator").get(user.uid).then((querySnapshot) => {
 
             // Loop through the data and store
             // it in array to display
             querySnapshot.forEach(element => {
-                var data = element.data();
+                const data = element.data();
                 settransactions(arr => [...arr, data]);
-
             });
             console.log(transactions)
         })
     }
-
 
     return (
         <>
