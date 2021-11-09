@@ -19,9 +19,9 @@ export const AddExpense = () => {
         },
         {
             id: 2,
-            name: "ubaid",
+            name: "Ansar",
             Type: "expense",
-            price: "10"
+            price: "12"
         }
     ]);
 
@@ -48,23 +48,23 @@ export const AddExpense = () => {
     }
 
     const addtodo = () => {
+        const updatedTransactions = transactions;
+        updatedTransactions.push(
+            {
+                id: transactions.length,
+                name: enteredTitle,
+                Type: enteredType,
+                price: enteredAmount,
+            }
+        );
 
-        transactions.push({
-            id: transactions.length,
-            name: enteredTitle,
-            Type: enteredType,
-            price: enteredAmount,
-        })
-        console.log(transactions)
+        console.log(updatedTransactions)
 
         db.collection("expense_calculator").doc(user.uid).set({
-            id: transactions.length,
-            name: enteredTitle,
-            Type: enteredType,
-            price: enteredAmount,
-            // transactions: [...transactions]
+            ...updatedTransactions
+
         }).then((element) => {
-            //success callback
+            settransactions(updatedTransactions);
         }).catch((error) => {
             //error callback
             alert('error ', error)
@@ -131,7 +131,7 @@ export const AddExpense = () => {
             </div>
             <div className="w-50" style={{margin: "auto"}}>
 
-                <table class="table table-hover">
+                <table className="table table-hover">
                     <thead>
                     <tr>
                         <th scope="col">#</th>
@@ -144,7 +144,7 @@ export const AddExpense = () => {
 
                     {transactions.map((item) => {
                         return (
-                            <tr>
+                            <tr key={item.id}>
                                 <th scope="row">{item.id}</th>
                                 <td>{item.name}</td>
                                 <td>{item.price}</td>
