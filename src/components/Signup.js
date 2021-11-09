@@ -6,7 +6,7 @@ function Signup() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [displayName, setdisplayName] = useState('')
-    const [image, setimage] = useState('')
+   
     // const [user, loading, error] = useAuthState(auth);
     const history = useHistory();
     // useEffect(() => {
@@ -21,12 +21,9 @@ function Signup() {
         console.log(email, password)
         try {
             const result = await auth.createUserWithEmailAndPassword(email, password)
-            var currentUser = auth.currentUser
-            console.log(currentUser)
-            currentUser.updateProfile({
-                displayName: displayName,
-             
-            })
+            // var currentUser = auth.currentUser
+            // console.log(currentUser)
+          
             history.push("/")
             // window.M.toast({ html: `welcome ${result.user.email}`, classes: "green" })
         } catch (err) {
@@ -44,7 +41,7 @@ function Signup() {
                     onChange={(e) => setdisplayName(e.target.value)}
                     placeholder="Y-our Name"
                 />
-                <input type="file" id="myFile" value={image} name="filename" onChange={(e) => setimage(e.target.value)}/>
+               
                  <input
                     type="text"
                     className="login__textBox"
@@ -72,7 +69,7 @@ function Signup() {
                     <Link to="/reset">Forgot Password</Link>
                 </div>
                 <div>
-                    Don't have an account? <Link to="/login">Register</Link> now.
+                    Don't have an account? <Link to="/">Register</Link> now.
                 </div>
             </div>
         </div>

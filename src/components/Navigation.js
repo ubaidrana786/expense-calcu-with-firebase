@@ -1,14 +1,10 @@
 import React from 'react'
-import { Link, useHistory } from 'react-router-dom';
+import { Link, } from 'react-router-dom';
 import { auth } from "../firebase"
 export const Navigation = ({ user }) => {
 
-    const history = useHistory();
-    const logout = () => {
-        auth.signOut()
-        history.push("/login")
-    }
-    console.log(user)
+
+
 
     return (
         <div>
@@ -23,22 +19,19 @@ export const Navigation = ({ user }) => {
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
                             {
-                                user ?
-                                    <div >
 
-                                        <button class="btn btn-primary" style={{ float: "right" }} onClick={logout} >Logout</button>
-                                    </div>
-                                    : <> <li class="nav-item ">
-                                        <Link to='/login' class="text-white nav-link">Login</Link>
+
+                                <> <li class="nav-item ">
+                                    <Link to='/login' class="text-white nav-link">Login</Link>
+                                </li>
+
+                                    <li class="nav-item ">
+                                        <Link to='/sign' class="text-white nav-link">signup</Link>
                                     </li>
-
-                                        <li class="nav-item ">
-                                            <Link to='/sign' class="text-white nav-link">signup</Link>
-                                        </li>
-                                        <li class="nav-item ">
-                                            <Link to='/' class="text-white nav-link">Todo</Link>
-                                        </li>
-                                        </>
+                                    <li class="nav-item ">
+                                        <Link to='/' class="text-white nav-link">Todo</Link>
+                                    </li>
+                                </>
 
                             }
 
