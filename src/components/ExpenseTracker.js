@@ -1,131 +1,196 @@
-import React, { Component } from 'react'
-import "./Login.css";
+import React, { useEffect, useState } from "react";
 import { auth, db } from "../firebase";
-export default class ExpenseTracker extends Component {
-    constructor(props) {
-        super(props)
+import { useHistory } from "react-router";
+export const ExpenseTracker = () => {
+  const history = useHistory();
+  const [user, setuser] = useState(null);
+  const [enteredTitle, setEnteredTitle] = useState("");
+  const [enteredAmount, setEnteredAmount] = useState("");
+  const [enteredType, setenteredType] = useState("");
+  //   const [enteredDate, setenteredDate] = useState("");
+  const [money, setmoney] = useState(0);
+  const [info, setInfo] = useState([]);
+  const [transactions, settransactions] = useState([
+    // {
+    //     id: 1,
+    //     name: "ubaid",
+    //     Type: "expense",
+    //     price: "10"
+    // },
+    // {
+    //     id: 2,
+    //     name: "Ansar",
+    //     Type: "expense",
+    //     price: "12"
+    // }
+  ]);
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        setuser(user);
+      } else setuser(null);
+    });
+  }, []);
+  useEffect(() => {
+    // db.collection("expense_calculator")
+    //   .get()
+    //   .then((querySnapshot) => {
+    //     querySnapshot.forEach((element) => {
+    //       var data = element.data();
+    //       querySnapshot.forEach((element) => {
+    //         // if (element.Type === "deposit") {
+    //         //     money + enteredAmount
+    //         // }else if(element.Type === "expense"){
+    //         //     money - enteredAmount
+    //         // }
+    //         var data = element.data();
+    //         // setInfo(data)
+    //         setInfo((arr) => [...arr, data]);
+    //       });
+    //     });
+    //   });
+  }, []);
+  //   console.log(info);
 
-        this.state = {
-            user: null,
-            transactions: [],
-            money: 0,
+  const amountChangeHandler = (event) => {
+    setEnteredAmount(event.target.value);
+  };
 
-            transactionName: '',
-            transactionType: '',
-            price: '',
+  const TypeChangeHandler = (event) => {
+    setenteredType(event.target.value);
+  };
+  const logout = () => {
+    auth.signOut();
+  };
 
+  const addtodo = (e) => {
+    e.preventdefault();
+    const updatedTransactions = transactions;
+    updatedTransactions.push({
+      name: enteredTitle,
+      Type: enteredType,
+      price: enteredAmount,
+      //   date: enteredDate,
+    });
 
-        }
+    console.log(updatedTransactions);
 
-    }
-    componentDidMount(){
-        auth.onAuthStateChanged(user => {
-                  if (user) {
-                    this.setState({
-                        setuser:user
-                        
-                    })
-                 
-                  }
-                  else this.setState({
-                      setuser:null
-                  })
-                })
-              
-    }
-     
-    
-    logout = () => {
-        auth.signOut()
-    }
-    handleChange = input => e => {
-        this.setState({
-            [input]: e.target.value !== "0" ? e.target.value : ""
-        });
-    }
-
-    addNewTransaction = () => {
-        const { transactionName, transactionType, price, currentUID, money } = this.state;
-
-       
-            const BackUpState = this.state.transactions;
-            BackUpState.push({
-                id: BackUpState.length + 1,
-                name: transactionName,
-                type: transactionType,
-                price: price,
-                // user_id: currentUID
-            });
-            db.collection("expense_calculator").doc().set({
-
-                id: BackUpState.length,
-                name: transactionName,
-                type: transactionType,
-                price: price,
-                // transactions: [...transactions]
-
-            }).then((data) => {
-                //success callback
-                console.log('success callback');
-                this.setState({
-                    transactions: BackUpState,
-                    money: transactionType === 'deposit' ? money + parseFloat(price) : money - parseFloat(price),
-                    transactionName: '',
-                    transactionType: '',
-                    price: ''
-                })
-            }).catch((error) => {
-                //error callback
-                console.log('error ', error)
-            });
-        
-    }
-    render() {
-        return (
-            <div>
-                <div className=" login__container">
-
-                    <h1 className="mt-5">Expense Calculator</h1>
-                    <div className="container w-50">
-                        <div className="login__container">
-                            <label>Title</label>
-                            <input
-                                type="text"
-                                className="login__textBox"
-                                value={this.state.transactionName}
-                                onChange={this.handleChange('transactionName')}
-                            />
-                            <label>Amount</label>
-                            <input
-                                type='number'
-                                className="login__textBox"
-                                min='0.01'
-                                step='0.01'
-                                value={this.state.price}
-                                onChange={this.handleChange('price')}
-                            />
-                            <label></label>
-                            <select name="type"
-                                className="login__textBox"
-                                onChange={this.handleChange('transactionType')}
-                                value={this.state.transactionType}>
-
-                                <option value="0">Type</option>
-                                <option value="expense">Expense</option>
-                                <option value="deposit">Deposit</option>
-                            </select>
-                        </div>
-
-                        <div className="login__container" >
-                            <button className="btn btn-dark " onClick={() => this.addNewTransaction()} >
-                                Add Expense
-                            </button>
-                            <button className="btn btn-primary mt-5" onClick={this.logout} >Logout</button>
-                            <h3></h3>
-                        </div>
-                    </div>
-                </div>
+    db.collection("expense_calculator")
+      .doc(user.uid)
+      .set({
+        ...updatedTransactions,
+      })
+      .then((element) => {
+        settransactions(updatedTransactions);
+        setmoney(
+          enteredType === "deposit"
+            ? money + parseFloat(enteredAmount)
+            : money - parseFloat(enteredAmount)
+        );
+      })
+      .catch((error) => {
+        //error callback
+        alert("error ", error);
+      });
+  };
+  return (
+    <div className="container ">
+      <div className="row mt-5">
+        <div className="col-md-6 login__container">
+          <h1 className="mb-5">Your Balance : </h1>
+          <div className="row mb-5">
+            <div className="col-md-6  card">
+              <h5>Deposit</h5>
+              <p>$ 12</p>
             </div>
-        )
-    }
-}
+            <div className="col-md-6 card">
+              <h5>Expense</h5>
+              <p>$ 12</p>
+            </div>
+          </div>
+          <form>
+            <div className="form-row row mb-5">
+              <div className="form-group col-md-6">
+                <input
+                  type="text"
+                  className="form-control"
+                  onChange={(e) => setEnteredTitle(e.target.value)}
+                  placeholder="Title"
+                />
+              </div>
+              <div className="form-group col-md-6">
+                <input
+                  type="number"
+                  className="form-control"
+                  min="0.01"
+                  step="0.01"
+                  value={enteredAmount}
+                  onChange={amountChangeHandler}
+                  placeholder="Amount"
+                />
+              </div>
+            </div>
+            <div className="form-row row">
+              <div className="form-group col-md-6">
+              <select name="type"
+                                className="form-control"
+                                onChange={TypeChangeHandler}
+                                value={enteredType}>
+
+                            <option value="0">Type</option>
+                            <option value="expense">Expense</option>
+                            <option value="deposit">Deposit</option>
+                        </select>
+              </div>
+              <div className="form-group col-md-6">
+                {/* <input
+                  type="date"
+                  className="form-control"
+                  id="inputPassword4"
+                  placeholder="Date"
+                  onChange={(e) => setenteredDate(e.target.value)}
+                /> */}
+              </div>
+            </div>
+
+            <div className="login__container">
+              <button className="btn btn-dark " onClick={addtodo}>
+                Add Expense
+              </button>
+              <button className="btn btn-primary mt-5" onClick={logout}>
+                Logout
+              </button>
+            </div>
+          </form>
+        </div>
+        <div className="col-md-6">
+          <h1>User Data</h1>
+          <div className="" style={{ margin: "auto" }}>
+            <table className="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">Title</th>
+                  <th scope="col">Price</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* {info.map((item) => {
+                  return (
+                    <tr key={item.id}>
+                      <th scope="row">{item[0].name}</th>
+                      <td>{item[0].price}</td>
+                      <td>{item[0].type}</td>
+                      <td>{item[0].date}</td>
+                    </tr>
+                  );
+                })} */}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

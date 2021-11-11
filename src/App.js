@@ -7,7 +7,7 @@ import Signup from "./components/Signup";
 
 import { auth } from "./firebase"
 import React, { useEffect, useState } from "react";
-
+import { ExpenseTracker } from "./components/ExpenseTracker";
 import { AddExpense } from "./components/AddExpense";
 
 function App() {
@@ -16,7 +16,7 @@ function App() {
         auth.onAuthStateChanged(user => {
             if (user) {
                 setuser(user)
-               
+
             }
             else setuser(null)
         })

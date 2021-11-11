@@ -13,6 +13,29 @@ const firebaseConfig = {
     appId: "1:593284739096:web:a538a7f83ec1ee03d7936d"
   };
 
+  const googleProvider = new firebase.auth.GoogleAuthProvider();
+  const signInWithGoogle = async () => {
+      try {
+          const res = await auth.signInWithPopup(googleProvider);
+          const user = res.user;
+          const query = await db
+              .collection("users")
+              .where("uid", "==", user.uid)
+              .get();
+          if (query.docs.length === 0) {
+              await db.collection("users").add({
+                  uid: user.uid,
+                  name: user.displayName,
+                  authProvider: "google",
+                  email: user.email,
+              });
+          }
+      } catch (err) {
+       
+          alert(err.message);
+      }
+  };
+
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
 const auth = app.auth();
@@ -21,5 +44,5 @@ const db = app.firestore();
 export {
     auth,
     db,
-    
+    signInWithGoogle
 };

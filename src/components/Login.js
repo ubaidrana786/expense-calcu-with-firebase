@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Link, useHistory} from "react-router-dom";
-import {auth} from  "../firebase"
+import {auth,signInWithGoogle} from  "../firebase"
 import "./Login.css";
 
 function Login() {
@@ -27,6 +27,7 @@ function Login() {
            alert(err.message) 
         }
     }
+   
     return (
         <div className="login">
             <div className="login__container">
@@ -50,15 +51,16 @@ function Login() {
                 >
                     Login
                 </button>
-                <button className="login__btn login__google" >
+                <button className="login__btn login__google" onClick={signInWithGoogle}>
                     Login with Google
                 </button>
-                <div>
-                    <Link to="/reset">Forgot Password</Link>
-                </div>
+                    {/* <div>
+                        <Link to="/reset">Forgot Password</Link>
+                    </div> */}
                 <div>
                     Don't have an account? <Link to="/sign">Register</Link> now.
                 </div>
+                
             </div>
         </div>
     );
