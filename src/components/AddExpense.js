@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router";
+
 import "./Login.css";
 import { auth, db } from "../firebase";
 
 export const AddExpense = () => {
-  const history = useHistory();
   const [user, setuser] = useState(null);
   const [enteredTitle, setEnteredTitle] = useState("");
   const [enteredAmount, setEnteredAmount] = useState("");
@@ -33,26 +32,22 @@ export const AddExpense = () => {
         setuser(user);
       } else setuser(null);
     });
+ 
   }, []);
   useEffect(() => {
+    // getMarkers();
+    const array = [];
     db.collection("expense_calculator")
       .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((element) => {
-          var data = element.data();
-          querySnapshot.forEach((element) => {
-            // if (element.Type === "deposit") {
-            //     money + enteredAmount
-            // }else if(element.Type === "expense"){
-            //     money - enteredAmount
-            // }
-            var data = element.data();
-          
-            setInfo((arr) => [...arr, data]);
-            
-          });
-         
+      .then((Snapshot) => {
+        Snapshot.docs.forEach((element) => {
+          let data = { ...element.data() };
+          array.push(data);
+          // setInfo(data);
+          //  setInfo((arr) => [...arr, data]);
         });
+        setInfo(array);
+        console.log(info);
       });
   }, []);
 
@@ -183,17 +178,17 @@ export const AddExpense = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {/* {info.map((item) => {
-                    const { id, name, price, Type, date } = info;
+                  {info.map((item) => {
+                    // const { id, name, price, Type, date } = info[0];
                     return (
-                      <tr key={id}>
-                        <th scope="row">{id}</th>
-                        <td>{price}</td>
-                        <td>{Type}</td>
-                        <td>{date}</td>
+                      <tr key={item[0].id} >
+                        <td>{item[0].name}</td>
+                        <td>{item[0].price}</td>
+                        <td>{item[0].Type}</td>
+                        <td>{item[0].date}</td>
                       </tr>
                     );
-                  })} */}
+                  })}
                 </tbody>
               </table>
             </div>
