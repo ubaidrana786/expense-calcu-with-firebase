@@ -3,7 +3,8 @@ import { Link, useHistory } from "react-router-dom";
 import { auth, signInWithGoogle } from "../firebase"
 import "./Login.css";
 import { ToastContainer, toast } from 'react-toastify';
-function Login() {
+
+const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -49,9 +50,7 @@ function Login() {
     }
 
     return (
-
         <>
-
             <section className="ftco-section">
                 <ToastContainer />
                 <div className="container">
@@ -64,7 +63,7 @@ function Login() {
                                     <span className="fa fa-user-o"></span>
                                 </div>
                                 <h3 className="text-center mb-4">Sign In</h3>
-                                <form action="#" className="login-form">
+                                <form onSubmit={handlesubmit} className="login-form">
                                     <div className="form-group">
                                         <input type="email" className="form-control rounded-left" placeholder="Email" value={email}
                                             onChange={(e) => setEmail(e.target.value)} required />
@@ -74,7 +73,7 @@ function Login() {
                                             onChange={(e) => setPassword(e.target.value)} required />
                                     </div>
                                     <div className="form-group">
-                                        <button type="submit" className="form-control btn btn-primary rounded submit px-3" onClick={(e) => handlesubmit(e)}>Log_In</button>
+                                        <button type="submit" className="form-control btn btn-primary rounded submit px-3" >Log_In</button>
                                     </div>
                                     <div className="form-group ">
 

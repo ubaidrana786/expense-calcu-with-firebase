@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 import { auth, db } from "../../firebase";
-import { Modal, Button, } from "react-bootstrap";
-import { ShowModalBody } from './ShowModalBody';
-import { toast } from 'react-toastify';
-export const ExpenseList = () => {
+import { Modal, Button } from "react-bootstrap";
+import { ShowModalBody } from "./ShowModalBody";
+import { toast } from "react-toastify";
 
+export const ExpenseList = () => {
   const [info, setInfo] = useState([]);
   const [user, setuser] = useState(null);
-  const [modalShow, setModalShow] = React.useState(false);
+  const [modalShow, setModalShow] = useState(false);
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
@@ -15,26 +15,31 @@ export const ExpenseList = () => {
       } else setuser(null);
     });
   }, []);
+
   useEffect(() => {
-    // getMarkers();
-    const tests = []
-    db.collection("expense_calculator").get()
-     
+    if (user) {
+    const tests = [];
+    
+    db.collection("expense_calculator")
+      .get()
       .then((Snapshot) => {
         Snapshot.docs.forEach((doc) => {
-          tests.push({
-            id: doc.id,
-            datos: doc.data()
-          });
+          if(doc.id === user.uid){
+            setInfo( Object.values(doc.data()));
+
+            
+          }
+
           // let data = { ...element.data() };
           // array.push(data);
         });
-        // setInfo(tests);
-        // console.log(tests);
+        
+       
       });
-      setInfo(tests)
-      console.log(info)
-  }, []);
+    
+   // console.log(info);
+    }
+  }, [user]);
   function MyVerticallyCenteredModal(props) {
     return (
       <Modal
@@ -70,27 +75,21 @@ export const ExpenseList = () => {
               <th scope="col">Date</th>
             </tr>
           </thead>
-          <tbody>
-            {/* {info.map((item) => {
-                    // const { id, name, price, Type, date } = info[0];
-                    return (
-                      <tr key={item[0].id} >
-                        <td>{item[0].name}</td>
-                        <td>{item[0].price}</td>
-                        <td>{item[0].Type}</td>
-                        <td>{item[0].date}</td>
-                      </tr>
-                    );
-                  })} */}
-            {info.map((item,id) => {
+          <tbody>       
+            {info.length > -1 && info.map((item) => {
               // const { id, name, price, Type, date } = info[0];
               return (
-                <tr key={id}>
-                  <td>{item.name}</td>
-                  {/* <td>{item.data[0].price}</td>
-                  <td>{item.data[0].Type}</td>
-                  <td>{item.data[0].date}</td> */}
-                  <button className="btn btn-primary" onClick={() => setModalShow(true)}>Edit</button>
+                <tr key={item.id}>
+                  {/* <td>{item.name}</td> */}
+                   <td>{item.price}</td>
+                  <td>{item.Type}</td>
+                  <td>{item.date}</td> 
+                  <button
+                    className="btn text-white" style={{ backgroundColor: "#192bc2" }}
+                    onClick={() => setModalShow(true)}
+                  >
+                    Edit
+                  </button>
                 </tr>
               );
             })}
@@ -102,5 +101,5 @@ export const ExpenseList = () => {
         onHide={() => setModalShow(false)}
       />
     </div>
-  )
-}
+  );
+};

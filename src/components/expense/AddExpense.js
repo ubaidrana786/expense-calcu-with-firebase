@@ -4,15 +4,15 @@ import "../Login.css";
 import { auth, db } from "../../firebase";
 import { ToastContainer, toast } from "react-toastify";
 import { ExpenseList } from "./ExpenseList";
-import { ImageUpload } from "./ImageUpload";
+import { Navigation } from "../Navigation";
 
 export const AddExpense = () => {
-  const enteredTitleRef = useRef()
-  const enteredAmountRef = useRef()
-  const enteredTypeRef = useRef()
-  const enteredDateRef = useRef()
+  const enteredTitleRef = useRef();
+  const enteredAmountRef = useRef();
+  const enteredTypeRef = useRef();
+  const enteredDateRef = useRef();
   const [user, setuser] = useState(null);
-  const [image, setimage] = useState(null)
+
   // const [enteredTitle, setEnteredTitle] = useState("");
   // const [enteredAmount, setEnteredAmount] = useState("");
   // const [enteredType, setenteredType] = useState("");
@@ -41,20 +41,32 @@ export const AddExpense = () => {
       } else setuser(null);
     });
   }, []);
+  useEffect(() => {
+    if (user) {
+    const tests = [];
+    
+    db.collection("expense_calculator")
+      .get()
+      .then((Snapshot) => {
+        Snapshot.docs.forEach((doc) => {
+          if(doc.id === user.uid){
+            settransactions( Object.values(doc.data()));
 
+            
+          }
 
-  // const amountChangeHandler = (event) => {
-  //   setEnteredAmount(event.target.value);
-  // };
+          // let data = { ...element.data() };
+          // array.push(data);
+        });
+        
+       
+      });
+    
+   // console.log(info);
+    }
+  }, [user]);
 
-  // const TypeChangeHandler = (event) => {
-  //   setenteredType(event.target.value);
-  // };
-  const logout = () => {
-    auth.signOut();
-  };
-
-  const addtodo = (e) => {
+  const addExpense = (e) => {
     e.preventDefault();
     const enteredTitleRefValue = enteredTitleRef.current.value;
     const enteredAmountRefValue = enteredAmountRef.current.value;
@@ -71,7 +83,7 @@ export const AddExpense = () => {
       //   price: enteredAmountRefValue,
       //   date: enteredDateRefValue,
       // });
-    })
+    });
     db.collection("expense_calculator")
       .doc(user.uid)
       .set({
@@ -79,7 +91,6 @@ export const AddExpense = () => {
       })
       .then((element) => {
         settransactions(updatedTransactions);
-
       })
       .catch((error) => {
         //error callback
@@ -87,13 +98,13 @@ export const AddExpense = () => {
         alert("error ", error);
       });
   };
- 
 
   return (
     <>
       <ToastContainer />
-      <div className="container ">
-        <div className="row mt-5">
+      <Navigation />
+      <div className="container">
+        <div className="row " style={{marginTop:"100px"}}>
           <div className="col-md-6 login__container">
             <h1 className="mb-5">Your Balance : {money} </h1>
             <div className="row mb-5">
@@ -155,22 +166,21 @@ export const AddExpense = () => {
               </div>
 
               <div className="login__container">
-                <button className="btn btn-dark " onClick={addtodo}>
+                <button
+                  className="btn text-white"
+                  style={{ backgroundColor: "#192bc2" }}
+                  onClick={addExpense}
+                >
                   Add Expense
                 </button>
-                <button className="btn btn-primary mt-5" onClick={logout}>
-                  Logout
-                </button>
               </div>
-            
             </form>
           </div>
           <div className="col-md-6">
             <ExpenseList />
           </div>
-          <ImageUpload/>
+          
         </div>
-
       </div>
     </>
   );
