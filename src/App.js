@@ -8,8 +8,9 @@ import Signup from "./components/Signup";
 import { auth } from "./firebase";
 import React, { useEffect, useState } from "react";
 
-import { AddExpense } from "./components/AddExpense";
-
+import { AddExpense } from "./components/expense/AddExpense";
+import 'react-toastify/dist/ReactToastify.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 function App() {
   const [user, setuser] = useState(null);
   useEffect(() => {
@@ -24,7 +25,7 @@ function App() {
       <Router>
         <Switch>
           <Route exact path="/">
-            {!user == 1 ? <Login /> : <AddExpense />}
+            {!user == 1 ? <Login /> :  <AddExpense/>}
           </Route>
           <Route exact path="/sign" component={Signup} />
         </Switch>

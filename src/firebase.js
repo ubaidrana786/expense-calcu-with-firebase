@@ -40,9 +40,11 @@ const firebaseConfig = {
 const app = firebase.initializeApp(firebaseConfig);
 const auth = app.auth();
 const db = app.firestore();
+// const storage = app.storage()
 
 export {
     auth,
     db,
-    signInWithGoogle
+    signInWithGoogle,
+    // storage
 };

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { auth } from "../firebase"
-
+import { ToastContainer, toast } from 'react-toastify';
 function Signup() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [displayName, setdisplayName] = useState('')
-   
+
     // const [user, loading, error] = useAuthState(auth);
     const history = useHistory();
     // useEffect(() => {
@@ -21,58 +21,77 @@ function Signup() {
         console.log(email, password)
         try {
             const result = await auth.createUserWithEmailAndPassword(email, password)
-            // var currentUser = auth.currentUser
-            // console.log(currentUser)
-          
+            toast.success("User is logged in", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
             history.push("/")
-            // window.M.toast({ html: `welcome ${result.user.email}`, classes: "green" })
         } catch (err) {
-            alert(err.message)
+            toast.error(err + "", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            })
+
 
         }
     }
     return (
-        <div className="login">
-            <div className="login__container">
-                <input
-                    type="text"
-                    className="login__textBox"
-                    value={displayName}
-                    onChange={(e) => setdisplayName(e.target.value)}
-                    placeholder="Y-our Name"
-                />
-               
-                 <input
-                    type="text"
-                    className="login__textBox"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="E-mail Address"
-                />
-                <input
-                    type="password"
-                    className="login__textBox"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                />
-                <button
-                    className="login__btn"
-                    onClick={(e) => handlesubmit(e)}
-                >
-                    Sign Up
-                </button>
-                <button className="login__btn login__google" >
-                    Login with Google
-                </button>
-                <div>
-                    <Link to="/reset">Forgot Password</Link>
+        <> 
+            <section className="ftco-section">
+                <ToastContainer />
+                <div className="container">
+                    <div className="row justify-content-center">
+                        {/* <div className="col-md-6 text-center mb-5">
+					<h2 className="heading-section">Login #01</h2>
+				</div> */}
+                    </div>
+                    <div className="row justify-content-center">
+                        <div className="col-md-7 col-lg-5">
+                            <div className="login-wrap p-4 p-md-5">
+                                <div className="icon d-flex align-items-center justify-content-center">
+                                    <span className="fa fa-user-o"></span>
+                                </div>
+                                <h3 className="text-center mb-4">Sign Up</h3>
+                                <form action="#" className="login-form">
+                                    <div className="form-group">
+                                        <input type="text" className="form-control rounded-left" placeholder="Username" value={displayName}
+                                            onChange={(e) => setdisplayName(e.target.value)} required />
+                                    </div>
+                                    <div className="form-group">
+                                        <input type="email" className="form-control rounded-left" placeholder="E_mail" value={email}
+                                            onChange={(e) => setEmail(e.target.value)} required />
+                                    </div>
+                                    <div className="form-group d-flex">
+                                        <input type="password" className="form-control rounded-left" placeholder="Password" value={password}
+                                            onChange={(e) => setPassword(e.target.value)} required />
+                                    </div>
+                                    <div className="form-group">
+                                        <button type="submit" className="form-control btn btn-primary rounded submit px-3" onClick={(e) => handlesubmit(e)}>Sign_Up</button>
+                                    </div>
+                                    <div className="form-group ">
+
+                                        <div className="w-100 text-center">
+                                        <Link to="/" className="text-primary">Already have an Accounts ?</Link>
+                                        </div>
+                                    </div>
+                                   
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    Don't have an account? <Link to="/">Register</Link> now.
-                </div>
-            </div>
-        </div>
+            </section>
+        </>
     );
 }
 
