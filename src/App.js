@@ -6,26 +6,23 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 
 import { auth } from "./firebase";
-import React, { useEffect, useState } from "react";
-
+import React, { useState, useContext } from "react";
+import AuthContext from "./store/auth-contex";
 import { AddExpense } from "./components/expense/AddExpense";
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 function App() {
-  const [user, setuser] = useState(null);
-  useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        setuser(user);
-      } else setuser(null);
-    });
-  }, []);
+  const authCtx = useContext(AuthContext);
+  const isLoggedIn = authCtx.isLoggedIn;
   return (
+
     <div className="App">
       <Router>
         <Switch>
+
           <Route exact path="/">
-            {user ?  <AddExpense/> : <Login />}
+            {isLoggedIn && <AddExpense/>}
+            {!isLoggedIn && <Login />}
           </Route>
           <Route exact path="/sign" component={Signup} />
         </Switch>

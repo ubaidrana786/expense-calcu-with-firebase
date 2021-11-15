@@ -1,77 +1,77 @@
-import React, { useEffect, useState, useRef } from "react";
-
+import React, { useEffect, useState, useRef, useContext } from "react";
+import { ExpenseList } from "./ExpenseList";
 import "../Login.css";
 import { auth, db } from "../../firebase";
 import { ToastContainer, toast } from "react-toastify";
-import { ExpenseList } from "./ExpenseList";
+import AuthContext from "../../store/auth-contex";
 import { Navigation } from "../Navigation";
 
 export const AddExpense = () => {
+  const authCtx = useContext(AuthContext);
+  const isLoggedIn = authCtx.isLoggedIn;
+  const isEmpty = (value) => value.trim() === '';
+  const isFiveChars = (value) => value.trim().length === 5;
+  const [formInputsValidity, setFormInputsValidity] = useState({
+    name: true,
+    Amount: true,
+    Type: true,
+    date: true
+
+  });
+  const [money, setmoney] = useState(0)
   const enteredTitleRef = useRef();
   const enteredAmountRef = useRef();
   const enteredTypeRef = useRef();
   const enteredDateRef = useRef();
-  const [user, setuser] = useState(null);
-
-  // const [enteredTitle, setEnteredTitle] = useState("");
-  // const [enteredAmount, setEnteredAmount] = useState("");
-  // const [enteredType, setenteredType] = useState("");
-  // const [enteredDate, setenteredDate] = useState("");
-  const [money, setmoney] = useState(0);
-
-  const [transactions, settransactions] = useState([
-    // {
-    //     id: 1,
-    //     name: "ubaid",
-    //     Type: "expense",
-    //     price: "10"
-    // },
-    // {
-    //     id: 2,
-    //     name: "Ansar",
-    //     Type: "expense",
-    //     price: "12"
-    // }
-  ]);
-
+  const [transactions, settransactions] = useState([]);
   useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        setuser(user);
-      } else setuser(null);
-    });
-  }, []);
-  useEffect(() => {
-    if (user) {
-    const tests = [];
-    
+    if (isLoggedIn) {
+
+      fetchDbData()
+
+    }
+  }, [isLoggedIn]);
+
+  const fetchDbData = () => {
     db.collection("expense_calculator")
       .get()
       .then((Snapshot) => {
         Snapshot.docs.forEach((doc) => {
-          if(doc.id === user.uid){
-            settransactions( Object.values(doc.data()));
+          if (doc.id === isLoggedIn.uid) {
+            settransactions(Object.values(doc.data()));
 
-            
           }
-
-          // let data = { ...element.data() };
-          // array.push(data);
         });
-        
-       
       });
-    
-   // console.log(info);
-    }
-  }, [user]);
+  }
 
-  const addExpense = (e) => {
+  const addExpenseData = (e) => {
     e.preventDefault();
     const enteredTitleRefValue = enteredTitleRef.current.value;
     const enteredAmountRefValue = enteredAmountRef.current.value;
     const enteredTypeRefValue = enteredTypeRef.current.value;
     const enteredDateRefValue = enteredDateRef.current.value;
+    const enteredTitleIsValid = !isEmpty(enteredTitleRefValue);
+    const enteredAmountIsValid = !isEmpty(enteredAmountRefValue);
+    const enteredTypeIsValid = !isEmpty(enteredTypeRefValue);
+    const enteredDateIsValid = !isEmpty(enteredDateRefValue);
+
+    setFormInputsValidity({
+      name: enteredTitleIsValid,
+      Amount: enteredAmountIsValid,
+      Type: enteredTypeIsValid,
+      date: enteredDateIsValid,
+    });
+
+    const formIsValid =
+      enteredTitleIsValid &&
+      enteredAmountIsValid &&
+      enteredTypeIsValid &&
+      enteredDateIsValid;
+
+    if (!formIsValid) {
+      return;
+    }
     const updatedTransactions = transactions;
     updatedTransactions.push({
       id: updatedTransactions.length,
@@ -79,18 +79,16 @@ export const AddExpense = () => {
       Type: enteredTypeRefValue,
       price: enteredAmountRefValue,
       date: enteredDateRefValue,
-      //   Type: enteredTypeRefValue,
-      //   price: enteredAmountRefValue,
-      //   date: enteredDateRefValue,
-      // });
+
     });
     db.collection("expense_calculator")
-      .doc(user.uid)
+      .doc(isLoggedIn.uid)
       .set({
         ...updatedTransactions,
       })
       .then((element) => {
         settransactions(updatedTransactions);
+        // setmoney(enteredTypeRefValue === 'deposit' ? money + parseFloat(enteredAmountRefValue) : money - parseFloat(enteredAmountRefValue),)
       })
       .catch((error) => {
         //error callback
@@ -98,15 +96,16 @@ export const AddExpense = () => {
         alert("error ", error);
       });
   };
+  // console.log(transactions)
 
   return (
     <>
-      <ToastContainer />
       <Navigation />
+      <ToastContainer />
       <div className="container">
-        <div className="row " style={{marginTop:"100px"}}>
+        <div className="row " style={{ marginTop: "100px" }}>
           <div className="col-md-6 login__container">
-            <h1 className="mb-5">Your Balance : {money} </h1>
+            <h1 className="mb-5">Your Balance </h1>
             <div className="row mb-5">
               <div className="col-md-6  card">
                 <h5>Recent Deposit</h5>
@@ -117,16 +116,16 @@ export const AddExpense = () => {
                 <p>$ 12</p>
               </div>
             </div>
-            <form>
+            <form onSubmit={addExpenseData}>
               <div className="form-row row mb-5">
                 <div className="form-group col-md-6">
                   <input
                     type="text"
                     className="form-control"
                     ref={enteredTitleRef}
-                    // onChange={(e) => setEnteredTitle(e.target.value)}
                     placeholder="Title"
                   />
+                  {!formInputsValidity.name && <p className="text-danger">Please enter a valid name!</p>}
                 </div>
                 <div className="form-group col-md-6">
                   <input
@@ -134,10 +133,10 @@ export const AddExpense = () => {
                     className="form-control"
                     min="0.01"
                     step="0.01"
-                    // onChange={amountChangeHandler}
                     ref={enteredAmountRef}
                     placeholder="Amount"
                   />
+                  {!formInputsValidity.Amount && (<p className="text-danger">Please enter a valid name!</p>)}
                 </div>
               </div>
               <div className="form-row row">
@@ -145,9 +144,9 @@ export const AddExpense = () => {
                   <select
                     name="type"
                     className="form-control"
-                    // onChange={TypeChangeHandler}
                     ref={enteredTypeRef}
                   >
+                    {!formInputsValidity.Type && (<p className="text-danger">Please enter a valid Type!</p>)}
                     <option value="0">Type</option>
                     <option value="expense">Expense</option>
                     <option value="deposit">Deposit</option>
@@ -159,9 +158,9 @@ export const AddExpense = () => {
                     className="form-control"
                     id="inputPassword4"
                     placeholder="Date"
-                    // onChange={(e) => setenteredDate(e.target.value)}
                     ref={enteredDateRef}
                   />
+                  {!formInputsValidity.date && (<p className="text-danger">Please enter a valid Date!</p>)}
                 </div>
               </div>
 
@@ -169,7 +168,7 @@ export const AddExpense = () => {
                 <button
                   className="btn text-white"
                   style={{ backgroundColor: "#192bc2" }}
-                  onClick={addExpense}
+
                 >
                   Add Expense
                 </button>
@@ -179,7 +178,6 @@ export const AddExpense = () => {
           <div className="col-md-6">
             <ExpenseList />
           </div>
-          
         </div>
       </div>
     </>

@@ -9,6 +9,7 @@ export const ShowModalBody = () => {
       } else setuser(null);
     });
   }, []);
+
   const enteredTitleRef = useRef()
   const enteredAmountRef = useRef()
   const enteredTypeRef = useRef()

@@ -1,12 +1,46 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { auth, signInWithGoogle } from "../firebase"
 import "./Login.css";
 import { ToastContainer, toast } from 'react-toastify';
 
 const Login = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [emailError, setEmailError] = useState('');
+    const [emailClass, setEmailClas] = useState("");
+    const [passwordError, setpasswordError] = useState()
+    const enteredEmailRef = useRef();
+    const enteredPasswordRef = useRef();
+    const validateEmail = (email) => {
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
+
+    const emailHandler = (e) => {
+        const enteredEmailRefValue = enteredEmailRef.current.value;
+
+        if (!validateEmail(enteredEmailRefValue)) {
+            setEmailError('Invalid email');
+            setEmailClas('error')
+        } else {
+            setEmailClas('')
+            setEmailError('');
+        }
+    }
+    const PasswordHandler = (e) => {
+        const enteredPasswordRefValue = enteredPasswordRef.current.value;
+
+        if (enteredPasswordRefValue.length < 6) {
+            setpasswordError('Invalid Password');
+            setEmailClas('error')
+        } else {
+            setEmailClas('')
+            setpasswordError('');
+        }
+    }
+
+
+    // const [email, setEmail] = useState("");
+    // const [password, setPassword] = useState("");
 
     // const [user, loading, error] = useAuthState(auth);
     const history = useHistory();
@@ -19,9 +53,10 @@ const Login = () => {
     // }, [user, loading]);
     const handlesubmit = async (e) => {
         e.preventDefault();
-        console.log(email, password)
+        const enteredEmailRefValue = enteredEmailRef.current.value;
+        const enteredPasswordRefValue = enteredPasswordRef.current.value;
         try {
-            const result = await auth.signInWithEmailAndPassword(email, password)
+            const result = await auth.signInWithEmailAndPassword(enteredEmailRefValue, enteredPasswordRefValue)
 
             // window.M.toast({ html: `welcome ${result.user.email}`, classes: "green" })
             toast.success("User is logged in", {
@@ -65,13 +100,19 @@ const Login = () => {
                                 <h3 className="text-center mb-4">Sign In</h3>
                                 <form onSubmit={handlesubmit} className="login-form">
                                     <div className="form-group">
-                                        <input type="email" className="form-control rounded-left" placeholder="Email" value={email}
-                                            onChange={(e) => setEmail(e.target.value)} required />
+                                        <input type="email" className="form-control rounded-left" placeholder="Email"
+                                            onBlur={emailHandler}
+                                            ref={enteredEmailRef} />
+
+                                        {<span style={{ color: 'red' }} className="error-message">{emailError}</span>}
                                     </div>
                                     <div className="form-group d-flex">
-                                        <input type="password" className="form-control rounded-left" placeholder="Password" value={password}
-                                            onChange={(e) => setPassword(e.target.value)} required />
+                                        <input type="password" className="form-control rounded-left" placeholder="Password"
+                                            onBlur={PasswordHandler}
+                                            ref={enteredPasswordRef} />
+
                                     </div>
+                                    {<span style={{ color: 'red' }} className="error-message">{passwordError}</span>}
                                     <div className="form-group">
                                         <button type="submit" className="form-control btn btn-primary rounded submit px-3" >Log_In</button>
                                     </div>
