@@ -104,7 +104,7 @@ export const ShowModalBody = () => {
               </div>
 
               <div className="login__container">
-                <button className="btn btn-primary " onClick={updateExpense} >
+                <button className="btn "  style={{ backgroundColor: "#19215c",color:"white" }} onClick={updateExpense} >
                   Update Expense
                 </button>
 

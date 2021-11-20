@@ -96,7 +96,7 @@ export const AddExpense = () => {
         alert("error ", error);
       });
   };
-  // console.log(transactions)
+  //  console.log("transaction" + transactions)
 
   return (
     <>
@@ -167,7 +167,7 @@ export const AddExpense = () => {
               <div className="login__container">
                 <button
                   className="btn text-white"
-                  style={{ backgroundColor: "#192bc2" }}
+                  style={{ backgroundColor: "#19215c" }}
 
                 >
                   Add Expense

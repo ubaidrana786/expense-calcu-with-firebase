@@ -11,7 +11,7 @@ export const Navigation = () => {
     <div>
       <nav
         className="navbar navbar-expand-lg fixed-top navbar-dark"
-        style={{ backgroundColor: "#192bc2" }}
+        style={{ backgroundColor: "#19215c" }}
       >
         <div className="container">
           <Link className="navbar-brand " to="/">
